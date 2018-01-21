@@ -1,0 +1,4 @@
+---
+  # HTPC Nas
+  - src: michalschott.netatalk
+  - src: bertvv.samba

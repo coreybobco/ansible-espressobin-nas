@@ -1,0 +1,75 @@
+- hosts: group1
+  pre_tasks:
+    - name: Ensure package database is up-to-date
+      apt:
+        update-cache: yes
+        name: ntfs-3g
+    - name: Create users
+      user:
+        name: "{{ item }}"
+        groups: users
+        append: true
+      with_items:
+        - usr1
+        - usr2
+    - file:
+        path: /mnt/hdd
+        state: directory
+        mode: 0777
+    - name: mount the HDD
+      mount:
+        src: /dev/sda
+        path: /mnt/hdd
+        state: mounted
+        fstype: ntfs
+    - file:
+        path: /mnt/hdd/guestshare
+        state: directory
+        mode: 0777
+
+  vars:
+      samba_netbios_name: ESPRESSOBIN
+      samba_server_string: 'Welcome to the test file server'
+      samba_workgroup: WORKGROUP
+
+      samba_load_printers: true
+
+      samba_log: /var/log/samba.log
+      samba_log_size: 60000
+
+      samba_map_to_guest: Never
+      samba_users:
+        - name: corey
+          password: timecube
+        - name: andy
+          password: timecube
+
+      samba_shares_root: /mnt/hdd
+      samba_shares:
+        # - name: restrictedshare
+        # - name: privateshare
+        #   comment: 'Only readable/writeable by usr1'
+        #   valid_users: usr1
+        #   write_list: usr1
+        #   group: usr1
+        # - name: protectedshare
+        #   public: yes
+        #   comment: 'Public, but only writeable by usr2'
+        #   write_list: usr2
+        #   group: users
+        # - name: publicshare
+        #   comment: 'Public share, writeable by all members of group ‘users’'
+        #   public: yes
+        #   write_list: +users
+        #   group: users
+        #   setype: public_content_t
+        - name: guestshare
+          comment: 'Share accessible for guests'
+          guest_ok: yes
+          writable: yes
+          path: /mnt/hdd/
+      netatalk_timemachine_path: /mnt/hdd/TimeMachine
+
+  roles:
+      - bertvv.samba
+      - michalschott.netatalk

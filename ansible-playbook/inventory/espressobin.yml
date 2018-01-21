@@ -1,0 +1,5 @@
+group1:
+  hosts:
+    espressobin:
+      ansible_host: "{{ hostname }}"
+      ansible_user: "root"

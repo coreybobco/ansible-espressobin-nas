@@ -1,0 +1,9 @@
+ifconfig eth0 up
+dhclient wan
+apt update && apt upgrade
+apt install openssh-server python bash-completion avahi-daemon
+sed 's|localhost|espressobin|g' /etc/hostname
+service avahi-daemon restart
+sed -i 's/prohibit-password/yes/' /etc/ssh/sshd_config
+service sshd restart
+passwd
